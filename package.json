@@ -1,0 +1,23 @@
+{
+    "name": "taskday-date",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "@vue/compiler-sfc": "^3.0.5",
+        "ts-loader": "^9.1.2",
+        "typescript": "^4.2.4",
+        "vue-loader": "^16.2.0"
+    },
+    "dependencies": {
+        "@js-temporal/polyfill": "^0.4.1",
+        "@rollup/plugin-dynamic-import-vars": "^1.1.1",
+        "@vitejs/plugin-vue": "^1.2.2",
+        "vite": "^2.3.2",
+        "vite-plugin-externals": "^0.3.0",
+        "vue": "^3.0.0",
+        "vuedraggable": "^4.1.0"
+    }
+}

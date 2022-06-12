@@ -1,0 +1,70 @@
+<?php
+
+namespace Performing\Taskday\Date\Console\Commands;
+
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
+use Performing\Taskday\Date\Events\RecurringEvent;
+use Performing\Taskday\Date\Fields\DateField;
+use Taskday\Models\CardField;
+
+class CheckRecurringEventsCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'taskday-date:check-recurring-events';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Check for recurring events and create cards if necessary';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $this->info('Checking for recurring events...');
+
+        CardField::query()
+            ->whereHas('field', function ($fields) {
+                $fields->where('type', DateField::type());
+            })
+            ->cursor()
+            ->each(function (CardField $field) {
+                $data = json_decode($field->value);
+
+                if (! $data) {
+                    return;
+                }
+
+                $nextDate = DateField::findNextDate($data);
+
+                if ($nextDate->toDateString() == Carbon::now()->toDateString()) {
+                    $this->info('Event found: ' . $field->card->title);
+                    event(new RecurringEvent($field->card_id, $field->field_id, $data));
+                }
+            });
+
+        $this->info('Done!');
+    }
+}
