@@ -9803,19 +9803,28 @@ const _sfc_main = defineComponent({
   setup() {
     const { state, onChange } = useField();
     const data = ref((() => {
-      return JSON.parse(state.value);
+      try {
+        return JSON.parse(state.value);
+      } catch {
+        return {
+          version: 1,
+          start: 0,
+          ending: null,
+          frequency: null
+        };
+      }
     })());
     const formatted = ref("");
     const start = ref("");
     const frequency = ref("");
-    const nextDate = (start2) => {
-      if (!start2) {
+    const nextDate = (start2, frequency2) => {
+      if (!start2 || !frequency2) {
         return null;
       }
       let date = new temporal.Instant(BigInt(start2) * BigInt(1e6)).toZonedDateTimeISO(temporal.Now.timeZone()).toPlainDate();
-      if (["days", "weeks", "months", "years"].includes(data.value.frequency)) {
+      if (["days", "weeks", "months", "years"].includes(frequency2)) {
         while (temporal.PlainDate.compare(date, temporal.Now.plainDateISO()) < 0) {
-          date = date.add(temporal.Duration.from({ [data.value.frequency]: 1 }));
+          date = date.add(temporal.Duration.from({ [frequency2]: 1 }));
         }
       }
       return date;
@@ -9837,12 +9846,17 @@ const _sfc_main = defineComponent({
         data.value = { version: 1, start: 0, ending: null, frequency: "days" };
       }
       data.value.start = new Date(start.value).getTime();
-      data.value.frequency = frequency.value;
+      if (["days", "weeks", "months", "years"].includes(frequency.value)) {
+        data.value.frequency = frequency.value;
+      } else {
+        data.value.frequency = null;
+      }
       state.value = JSON.stringify(data.value);
       onChange();
     }
     function updateFormat() {
-      if (!data.value.start || !["days", "weeks", "months", "years"].includes(data.value.frequency)) {
+      var _a;
+      if (!data.value.start || !["days", "weeks", "months", "years"].includes((_a = data.value.frequency) != null ? _a : "")) {
         return "-";
       }
       let formatter = new intl.DateTimeFormat(void 0, {
@@ -9851,7 +9865,12 @@ const _sfc_main = defineComponent({
         month: "short",
         timeZone: temporal.Now.timeZone()
       });
-      formatted.value = formatter.format(nextDate(data.value.start));
+      let date = nextDate(data.value.start, data.value.frequency);
+      if (date) {
+        formatted.value = formatter.format(date);
+      } else {
+        formatted.value = "-";
+      }
     }
     return { start, frequency, formatted };
   }
@@ -9863,10 +9882,11 @@ const _resolveComponent = window["Vue"].resolveComponent;
 const _withCtx = window["Vue"].withCtx;
 const _createVNode = window["Vue"].createVNode;
 const _createElementVNode = window["Vue"].createElementVNode;
-const _hoisted_1 = /* @__PURE__ */ _createElementVNode("option", { value: "days" }, "Daily", -1);
-const _hoisted_2 = /* @__PURE__ */ _createElementVNode("option", { value: "weeks" }, "Weekly", -1);
-const _hoisted_3 = /* @__PURE__ */ _createElementVNode("option", { value: "months" }, "Monthly", -1);
-const _hoisted_4 = /* @__PURE__ */ _createElementVNode("option", { value: "years" }, "Monthly", -1);
+const _hoisted_1 = /* @__PURE__ */ _createElementVNode("option", { value: "" }, "Not repeated", -1);
+const _hoisted_2 = /* @__PURE__ */ _createElementVNode("option", { value: "days" }, "Daily", -1);
+const _hoisted_3 = /* @__PURE__ */ _createElementVNode("option", { value: "weeks" }, "Weekly", -1);
+const _hoisted_4 = /* @__PURE__ */ _createElementVNode("option", { value: "months" }, "Monthly", -1);
+const _hoisted_5 = /* @__PURE__ */ _createElementVNode("option", { value: "years" }, "Monthly", -1);
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_VDropdownButton = _resolveComponent("VDropdownButton");
   const _component_VFormInput = _resolveComponent("VFormInput");
@@ -9898,7 +9918,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 _hoisted_1,
                 _hoisted_2,
                 _hoisted_3,
-                _hoisted_4
+                _hoisted_4,
+                _hoisted_5
               ]),
               _: 1
             }, 8, ["modelValue"])

@@ -12,6 +12,7 @@
           v-model="start"
         />
         <VFormSelect v-model="frequency" class="mt-2">
+          <option value="">Not repeated</option>
           <option value="days">Daily</option>
           <option value="weeks">Weekly</option>
           <option value="months">Monthly</option>
@@ -39,13 +40,12 @@ import {
   VFormInput,
   VFormSelect,
 } from "taskday";
-import { computed } from "@vue/reactivity";
 
 interface State {
   version: 1;
   start: number;
   ending: null | string;
-  frequency: "days" | "weeks" | "months" | "years";
+  frequency: null | "days" | "weeks" | "months" | "years";
 }
 
 export default defineComponent({
@@ -67,7 +67,16 @@ export default defineComponent({
 
     const data = ref<State>(
       (() => {
-        return JSON.parse(state.value);
+        try {
+          return JSON.parse(state.value);
+        } catch {
+          return {
+            version: 1,
+            start: 0,
+            ending: null,
+            frequency: null,
+          };
+        }
       })()
     );
 
@@ -75,8 +84,8 @@ export default defineComponent({
     const start = ref("");
     const frequency = ref("");
 
-    const nextDate = (start: number|null) => {
-      if (!start) {
+    const nextDate = (start: number|null, frequency: string|null) => {
+      if (!start || !frequency) {
         return null;
       }
 
@@ -86,11 +95,11 @@ export default defineComponent({
         .toZonedDateTimeISO(Temporal.Now.timeZone())
         .toPlainDate();
 
-      if (['days', 'weeks', 'months', 'years'].includes(data.value.frequency)) {
+      if (['days', 'weeks', 'months', 'years'].includes(frequency)) {
         while (
           Temporal.PlainDate.compare(date, Temporal.Now.plainDateISO()) < 0
         ) {
-          date = date.add(Temporal.Duration.from({ [data.value.frequency]: 1 }));
+          date = date.add(Temporal.Duration.from({ [frequency]: 1 }));
         }
       }
 
@@ -125,13 +134,17 @@ export default defineComponent({
         data.value = { version: 1, start: 0, ending: null, frequency: "days" };
       }
       data.value.start = new Date(start.value).getTime();
-      data.value.frequency = frequency.value as any;
+      if (['days', 'weeks', 'months', 'years'].includes(frequency.value)) {
+        data.value.frequency = <typeof data.value.frequency> frequency.value;
+      } else {
+        data.value.frequency = null;
+      }
       state.value = JSON.stringify(data.value);
       onChange();
     }
 
     function updateFormat() {
-        if (!data.value.start || !(['days', 'weeks', 'months', 'years'].includes(data.value.frequency)) ) {
+        if (!data.value.start || !(['days', 'weeks', 'months', 'years'].includes(data.value.frequency ?? '')) ) {
           return "-";
         }
 
@@ -142,7 +155,13 @@ export default defineComponent({
           timeZone: Temporal.Now.timeZone(),
         });
 
-        formatted.value = formatter.format(nextDate(data.value.start));
+        let date = nextDate(data.value.start, data.value.frequency)
+
+        if (date) {
+          formatted.value = formatter.format(date);
+        } else {
+          formatted.value = "-";
+        }
     }
 
     return { start, frequency, formatted };
