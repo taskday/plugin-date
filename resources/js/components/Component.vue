@@ -122,14 +122,17 @@ export default defineComponent({
     onMounted(() => {
       frequency.value = data.value.frequency;
       if (data.value.start) {
-        start.value = new Temporal.Instant(
-          BigInt(data.value.start) * BigInt(1000000)
-        )
-          .toZonedDateTimeISO(Temporal.Now.timeZone())
-          .toPlainDate()
-          .toString();
+        start.value = timestampToDate(data.value.start).toString();
       }
     });
+
+    function timestampToDate(timestamp: number) {
+      return new Temporal.Instant(
+        BigInt(timestamp) * BigInt(1000000)
+      )
+        .toZonedDateTimeISO(Temporal.Now.timeZone())
+        .toPlainDate();
+    }
 
     function saveData() {
       if (typeof data.value !== "object") {
@@ -146,7 +149,7 @@ export default defineComponent({
     }
 
     function updateFormat() {
-        if (!data.value.start || !(['days', 'weeks', 'months', 'years'].includes(data.value.frequency ?? '')) ) {
+        if (!data.value.start) {
           return "-";
         }
 
@@ -157,13 +160,13 @@ export default defineComponent({
           timeZone: Temporal.Now.timeZone(),
         });
 
-        let date = nextDate(data.value.start, data.value.frequency)
+        let date = timestampToDate(data.value.start);
 
-        if (date) {
-          formatted.value = formatter.format(date);
-        } else {
-          formatted.value = "-";
+        if ((['days', 'weeks', 'months', 'years'].includes(data.value.frequency ?? ''))) {
+          date = nextDate(data.value.start, data.value.frequency) || date;
         }
+        
+        formatted.value = formatter.format(date);
     }
 
     return { start, frequency, formatted };

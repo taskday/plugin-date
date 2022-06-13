@@ -9840,9 +9840,12 @@ const _sfc_main = defineComponent({
     onMounted(() => {
       frequency.value = data.value.frequency;
       if (data.value.start) {
-        start.value = new temporal.Instant(BigInt(data.value.start) * BigInt(1e6)).toZonedDateTimeISO(temporal.Now.timeZone()).toPlainDate().toString();
+        start.value = timestampToDate(data.value.start).toString();
       }
     });
+    function timestampToDate(timestamp) {
+      return new temporal.Instant(BigInt(timestamp) * BigInt(1e6)).toZonedDateTimeISO(temporal.Now.timeZone()).toPlainDate();
+    }
     function saveData() {
       if (typeof data.value !== "object") {
         data.value = { version: 1, start: 0, ending: null, frequency: "days" };
@@ -9858,7 +9861,7 @@ const _sfc_main = defineComponent({
     }
     function updateFormat() {
       var _a;
-      if (!data.value.start || !["days", "weeks", "months", "years"].includes((_a = data.value.frequency) != null ? _a : "")) {
+      if (!data.value.start) {
         return "-";
       }
       let formatter = new intl.DateTimeFormat(void 0, {
@@ -9867,12 +9870,11 @@ const _sfc_main = defineComponent({
         month: "short",
         timeZone: temporal.Now.timeZone()
       });
-      let date = nextDate(data.value.start, data.value.frequency);
-      if (date) {
-        formatted.value = formatter.format(date);
-      } else {
-        formatted.value = "-";
+      let date = timestampToDate(data.value.start);
+      if (["days", "weeks", "months", "years"].includes((_a = data.value.frequency) != null ? _a : "")) {
+        date = nextDate(data.value.start, data.value.frequency) || date;
       }
+      formatted.value = formatter.format(date);
     }
     return { start, frequency, formatted };
   }
