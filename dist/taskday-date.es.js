@@ -9862,7 +9862,7 @@ const _sfc_main = defineComponent({
     function updateFormat() {
       var _a;
       if (!data.value.start) {
-        return "-";
+        formatted.value = " / ";
       }
       let formatter = new intl.DateTimeFormat(void 0, {
         day: "numeric",

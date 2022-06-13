@@ -150,7 +150,7 @@ export default defineComponent({
 
     function updateFormat() {
         if (!data.value.start) {
-          return "-";
+          formatted.value = " / ";
         }
 
         let formatter = new Intl.DateTimeFormat(undefined, {
