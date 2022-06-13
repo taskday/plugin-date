@@ -9839,7 +9839,9 @@ const _sfc_main = defineComponent({
     });
     onMounted(() => {
       frequency.value = data.value.frequency;
-      start.value = new temporal.Instant(BigInt(data.value.start) * BigInt(1e6)).toZonedDateTimeISO(temporal.Now.timeZone()).toPlainDate().toString();
+      if (data.value.start) {
+        start.value = new temporal.Instant(BigInt(data.value.start) * BigInt(1e6)).toZonedDateTimeISO(temporal.Now.timeZone()).toPlainDate().toString();
+      }
     });
     function saveData() {
       if (typeof data.value !== "object") {
@@ -9886,7 +9888,7 @@ const _hoisted_1 = /* @__PURE__ */ _createElementVNode("option", { value: "" }, 
 const _hoisted_2 = /* @__PURE__ */ _createElementVNode("option", { value: "days" }, "Daily", -1);
 const _hoisted_3 = /* @__PURE__ */ _createElementVNode("option", { value: "weeks" }, "Weekly", -1);
 const _hoisted_4 = /* @__PURE__ */ _createElementVNode("option", { value: "months" }, "Monthly", -1);
-const _hoisted_5 = /* @__PURE__ */ _createElementVNode("option", { value: "years" }, "Monthly", -1);
+const _hoisted_5 = /* @__PURE__ */ _createElementVNode("option", { value: "years" }, "Yearly", -1);
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_VDropdownButton = _resolveComponent("VDropdownButton");
   const _component_VFormInput = _resolveComponent("VFormInput");
