@@ -16,7 +16,7 @@
           <option value="days">Daily</option>
           <option value="weeks">Weekly</option>
           <option value="months">Monthly</option>
-          <option value="years">Monthly</option>
+          <option value="years">Yearly</option>
         </VFormSelect>
       </VDropdownItems>
     </VDropdown>
@@ -121,12 +121,14 @@ export default defineComponent({
 
     onMounted(() => {
       frequency.value = data.value.frequency;
-      start.value = new Temporal.Instant(
-        BigInt(data.value.start) * BigInt(1000000)
-      )
-        .toZonedDateTimeISO(Temporal.Now.timeZone())
-        .toPlainDate()
-        .toString();
+      if (data.value.start) {
+        start.value = new Temporal.Instant(
+          BigInt(data.value.start) * BigInt(1000000)
+        )
+          .toZonedDateTimeISO(Temporal.Now.timeZone())
+          .toPlainDate()
+          .toString();
+      }
     });
 
     function saveData() {
