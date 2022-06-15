@@ -19,6 +19,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-      $schedule->command(CheckRecurringEventsCommand::class)->dailyAt('08:00');
+      $schedule->command('taskday-date:check-recurring-events')->dailyAt('08:00');
     }
 }
