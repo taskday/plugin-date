@@ -12,16 +12,10 @@ class DateField extends Field
         return null;
     }
 
-    public static function findNextDate($data): Carbon|null 
+    public static function findNextDate(Carbon $date, ?string $frequency = null): Carbon|null 
     {
-        $date = Carbon::createFromTimestamp($data->start / 1000);
-        
-        if (! $data->start) {
-            return null;
-        }
-
         while ($date->lt(Carbon::now()->startOfDay())) {
-            match ($data->frequency) {
+            match ($frequency) {
                 'days' => $date->addDays(1),
                 'weeks' => $date->addWeeks(1),
                 'months' => $date->addMonths(1),

@@ -1,16 +1,20 @@
 <?php
 
-namespace Tests;
+namespace Performing\Taskday\Date\Tests;
 
-use Orchestra\Testbench\TestCase as Orchestra;
-use Performing\Taskday\TaskdayCoreServiceProvider;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Performing\Taskday\Date\DateServiceProvider;
+use Taskday\TaskdayServiceProvider;
 
-class TestCase extends Orchestra
+class TestCase extends \Orchestra\Testbench\TestCase
 {
+    use DatabaseMigrations;
+
     protected function getPackageProviders($app)
     {
         return [
-            TaskdayCoreServiceProvider::class,
+            DateServiceProvider::class,
+            TaskdayServiceProvider::class,
         ];
     }
 }

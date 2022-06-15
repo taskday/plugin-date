@@ -57,10 +57,13 @@ class CheckRecurringEventsCommand extends Command
                     return;
                 }
 
-                $nextDate = DateField::findNextDate($data);
+                $date = Carbon::createFromTimestamp($data->start / 1000);
 
-                if ($nextDate->toDateString() == Carbon::now()->toDateString()) {
-                    $this->info('Event found: ' . $field->card->title);
+                if ($data->frequency) {
+                    $date = DateField::findNextDate($date, $data->frequency);
+                }
+
+                if ($date->toDateString() == Carbon::now()->toDateString()) {
                     event(new RecurringEvent($field->card_id, $field->field_id, $data));
                 }
             });

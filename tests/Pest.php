@@ -11,7 +11,7 @@
 |
 */
 
-// uses(Tests\TestCase::class)->in('Feature');
+uses(\Performing\Taskday\Date\Tests\TestCase::class)->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
