@@ -9818,10 +9818,10 @@ const _sfc_main = defineComponent({
     const start = ref("");
     const frequency = ref("");
     const nextDate = (start2, frequency2) => {
-      if (!start2 || !frequency2) {
+      if (!start2 || !frequency2 || isNaN(start2)) {
         return null;
       }
-      let date = new temporal.Instant(BigInt(start2) * BigInt(1e6)).toZonedDateTimeISO(temporal.Now.timeZone()).toPlainDate();
+      let date = timestampToDate(start2);
       if (["days", "weeks", "months", "years"].includes(frequency2)) {
         while (temporal.PlainDate.compare(date, temporal.Now.plainDateISO()) < 0) {
           date = date.add(temporal.Duration.from({ [frequency2]: 1 }));
@@ -9839,7 +9839,7 @@ const _sfc_main = defineComponent({
     });
     onMounted(() => {
       frequency.value = data.value.frequency;
-      if (data.value.start) {
+      if (data.value.start && isNaN(data.value.start)) {
         start.value = timestampToDate(data.value.start).toString();
       }
     });
@@ -9861,8 +9861,9 @@ const _sfc_main = defineComponent({
     }
     function updateFormat() {
       var _a;
-      if (!data.value.start) {
-        formatted.value = " / ";
+      if (!data.value.start || isNaN(data.value.start)) {
+        formatted.value = "-";
+        return;
       }
       let formatter = new intl.DateTimeFormat(void 0, {
         day: "numeric",

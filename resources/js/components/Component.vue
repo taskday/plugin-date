@@ -85,15 +85,11 @@ export default defineComponent({
     const frequency = ref("");
 
     const nextDate = (start: number|null, frequency: string|null) => {
-      if (!start || !frequency) {
+      if (!start || !frequency || isNaN(start)) {
         return null;
       }
 
-      let date = new Temporal.Instant(
-        BigInt(start) * BigInt(1000000)
-      )
-        .toZonedDateTimeISO(Temporal.Now.timeZone())
-        .toPlainDate();
+      let date = timestampToDate(start);
 
       if (['days', 'weeks', 'months', 'years'].includes(frequency)) {
         while (
@@ -121,7 +117,8 @@ export default defineComponent({
 
     onMounted(() => {
       frequency.value = data.value.frequency;
-      if (data.value.start) {
+
+      if (data.value.start && isNaN(data.value.start)) {
         start.value = timestampToDate(data.value.start).toString();
       }
     });
@@ -149,8 +146,9 @@ export default defineComponent({
     }
 
     function updateFormat() {
-        if (!data.value.start) {
-          formatted.value = " / ";
+        if (!data.value.start || isNaN(data.value.start)) {
+          formatted.value = "-";
+          return;
         }
 
         let formatter = new Intl.DateTimeFormat(undefined, {
