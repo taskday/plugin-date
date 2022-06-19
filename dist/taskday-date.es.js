@@ -9839,7 +9839,7 @@ const _sfc_main = defineComponent({
     });
     onMounted(() => {
       frequency.value = data.value.frequency;
-      if (data.value.start && isNaN(data.value.start)) {
+      if (data.value.start && !isNaN(data.value.start)) {
         start.value = timestampToDate(data.value.start).toString();
       }
     });
@@ -9848,16 +9848,20 @@ const _sfc_main = defineComponent({
     }
     function saveData() {
       if (typeof data.value !== "object") {
-        data.value = { version: 1, start: 0, ending: null, frequency: "days" };
+        data.value = { version: 1, start: 0, ending: null, frequency: null };
       }
-      data.value.start = new Date(start.value).getTime();
+      if (start.value) {
+        data.value.start = new Date(start.value).getTime();
+      }
       if (["days", "weeks", "months", "years"].includes(frequency.value)) {
         data.value.frequency = frequency.value;
       } else {
         data.value.frequency = null;
       }
-      state.value = JSON.stringify(data.value);
-      onChange();
+      if (state.value !== JSON.stringify(data.value)) {
+        state.value = JSON.stringify(data.value);
+        onChange();
+      }
     }
     function updateFormat() {
       var _a;

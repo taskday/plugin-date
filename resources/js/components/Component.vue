@@ -82,7 +82,7 @@ export default defineComponent({
 
     const formatted = ref("");
     const start = ref("");
-    const frequency = ref("");
+    const frequency = ref<string|null>("");
 
     const nextDate = (start: number|null, frequency: string|null) => {
       if (!start || !frequency || isNaN(start)) {
@@ -118,7 +118,7 @@ export default defineComponent({
     onMounted(() => {
       frequency.value = data.value.frequency;
 
-      if (data.value.start && isNaN(data.value.start)) {
+      if (data.value.start && !isNaN(data.value.start)) {
         start.value = timestampToDate(data.value.start).toString();
       }
     });
@@ -133,16 +133,23 @@ export default defineComponent({
 
     function saveData() {
       if (typeof data.value !== "object") {
-        data.value = { version: 1, start: 0, ending: null, frequency: "days" };
+        data.value = { version: 1, start: 0, ending: null, frequency: null };
       }
-      data.value.start = new Date(start.value).getTime();
+      
+      if (start.value) {
+        data.value.start = new Date(start.value).getTime();
+      }
+
       if (['days', 'weeks', 'months', 'years'].includes(frequency.value)) {
         data.value.frequency = <typeof data.value.frequency> frequency.value;
       } else {
         data.value.frequency = null;
       }
-      state.value = JSON.stringify(data.value);
-      onChange();
+
+      if (state.value !== JSON.stringify(data.value)) {
+        state.value = JSON.stringify(data.value);
+        onChange();
+      }
     }
 
     function updateFormat() {
@@ -163,7 +170,7 @@ export default defineComponent({
         if ((['days', 'weeks', 'months', 'years'].includes(data.value.frequency ?? ''))) {
           date = nextDate(data.value.start, data.value.frequency) || date;
         }
-        
+        0
         formatted.value = formatter.format(date);
     }
 
