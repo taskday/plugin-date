@@ -9770,9 +9770,9 @@ var _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const defineComponent = window["Vue"].defineComponent;
-const onMounted = window["Vue"].onMounted;
-const ref = window["Vue"].ref;
+const defineComponent$1 = window["Vue"].defineComponent;
+const onMounted$1 = window["Vue"].onMounted;
+const ref$1 = window["Vue"].ref;
 const watch = window["Vue"].watch;
 const useField = window["Components"].useField;
 const VDropdown = window["Components"].VDropdown;
@@ -9786,7 +9786,7 @@ const VTabsPanels = window["Components"].VTabsPanels;
 const VTabsPanel = window["Components"].VTabsPanel;
 const VFormInput = window["Components"].VFormInput;
 const VFormSelect = window["Components"].VFormSelect;
-const _sfc_main = defineComponent({
+const _sfc_main$2 = defineComponent$1({
   components: {
     VDropdown,
     VDropdownButton,
@@ -9802,7 +9802,7 @@ const _sfc_main = defineComponent({
   },
   setup() {
     const { state, onChange } = useField();
-    const data = ref((() => {
+    const data = ref$1((() => {
       try {
         return JSON.parse(state.value);
       } catch {
@@ -9814,9 +9814,9 @@ const _sfc_main = defineComponent({
         };
       }
     })());
-    const formatted = ref("");
-    const start = ref("");
-    const frequency = ref("");
+    const formatted = ref$1("");
+    const start = ref$1("");
+    const frequency = ref$1("");
     const nextDate = (start2, frequency2) => {
       if (!start2 || !frequency2 || isNaN(start2)) {
         return null;
@@ -9837,7 +9837,7 @@ const _sfc_main = defineComponent({
       saveData();
       updateFormat();
     });
-    onMounted(() => {
+    onMounted$1(() => {
       frequency.value = data.value.frequency;
       if (data.value.start && !isNaN(data.value.start)) {
         start.value = timestampToDate(data.value.start).toString();
@@ -9881,13 +9881,13 @@ const _sfc_main = defineComponent({
       }
       formatted.value = formatter.format(date);
     }
-    return { start, frequency, formatted };
+    return { start, frequency, formatted, timestampToDate };
   }
 });
-const _toDisplayString = window["Vue"].toDisplayString;
-const _openBlock = window["Vue"].openBlock;
-const _createElementBlock = window["Vue"].createElementBlock;
-const _resolveComponent = window["Vue"].resolveComponent;
+const _toDisplayString$1 = window["Vue"].toDisplayString;
+const _openBlock$2 = window["Vue"].openBlock;
+const _createElementBlock$1 = window["Vue"].createElementBlock;
+const _resolveComponent$1 = window["Vue"].resolveComponent;
 const _withCtx = window["Vue"].withCtx;
 const _createVNode = window["Vue"].createVNode;
 const _createElementVNode = window["Vue"].createElementVNode;
@@ -9896,18 +9896,18 @@ const _hoisted_2 = /* @__PURE__ */ _createElementVNode("option", { value: "days"
 const _hoisted_3 = /* @__PURE__ */ _createElementVNode("option", { value: "weeks" }, "Weekly", -1);
 const _hoisted_4 = /* @__PURE__ */ _createElementVNode("option", { value: "months" }, "Monthly", -1);
 const _hoisted_5 = /* @__PURE__ */ _createElementVNode("option", { value: "years" }, "Yearly", -1);
-function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_VDropdownButton = _resolveComponent("VDropdownButton");
-  const _component_VFormInput = _resolveComponent("VFormInput");
-  const _component_VFormSelect = _resolveComponent("VFormSelect");
-  const _component_VDropdownItems = _resolveComponent("VDropdownItems");
-  const _component_VDropdown = _resolveComponent("VDropdown");
-  return _openBlock(), _createElementBlock("div", null, [
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_VDropdownButton = _resolveComponent$1("VDropdownButton");
+  const _component_VFormInput = _resolveComponent$1("VFormInput");
+  const _component_VFormSelect = _resolveComponent$1("VFormSelect");
+  const _component_VDropdownItems = _resolveComponent$1("VDropdownItems");
+  const _component_VDropdown = _resolveComponent$1("VDropdown");
+  return _openBlock$2(), _createElementBlock$1("span", null, [
     _createVNode(_component_VDropdown, null, {
       default: _withCtx(() => [
         _createVNode(_component_VDropdownButton, { class: "text-sm text-gray-800 dark:text-gray-100 font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded" }, {
           default: _withCtx(() => [
-            (_openBlock(), _createElementBlock("span", { key: _ctx.start }, _toDisplayString(_ctx.formatted), 1))
+            (_openBlock$2(), _createElementBlock$1("span", { key: _ctx.start }, _toDisplayString$1(_ctx.formatted), 1))
           ]),
           _: 1
         }),
@@ -9939,6 +9939,77 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       _: 1
     })
   ]);
+}
+var EditField = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1]]);
+const _defineComponent = window["Vue"].defineComponent;
+const _toDisplayString = window["Vue"].toDisplayString;
+const _openBlock$1 = window["Vue"].openBlock;
+const _createElementBlock = window["Vue"].createElementBlock;
+const onMounted = window["Vue"].onMounted;
+const ref = window["Vue"].ref;
+const _sfc_main$1 = /* @__PURE__ */ _defineComponent({
+  props: {
+    value: null
+  },
+  setup(__props) {
+    var _a;
+    const props = __props;
+    const data = ref(JSON.parse((_a = props.value) != null ? _a : "null"));
+    const formatted = ref("-");
+    function timestampToDate(timestamp) {
+      return new temporal.Instant(BigInt(timestamp) * BigInt(1e6)).toZonedDateTimeISO(temporal.Now.timeZone()).toPlainDate();
+    }
+    function updateFormat() {
+      if (props.value) {
+        if (!data.value.start || isNaN(data.value.start)) {
+          formatted.value = "-";
+          return;
+        }
+        let formatter = new intl.DateTimeFormat(void 0, {
+          day: "numeric",
+          weekday: "short",
+          month: "short",
+          timeZone: temporal.Now.timeZone()
+        });
+        let date = timestampToDate(data.value.start);
+        formatted.value = formatter.format(date);
+      }
+    }
+    onMounted(() => {
+      updateFormat();
+    });
+    return (_ctx, _cache) => {
+      return _openBlock$1(), _createElementBlock("span", null, _toDisplayString(formatted.value) + " " + _toDisplayString(data.value.frequency ? `every ${data.value.frequency}` : ""), 1);
+    };
+  }
+});
+const defineComponent = window["Vue"].defineComponent;
+const _sfc_main = defineComponent({
+  props: {
+    readonly: {
+      type: Boolean,
+      default: false
+    },
+    value: {
+      type: String,
+      required: false
+    }
+  },
+  components: {
+    ViewField: _sfc_main$1,
+    EditField
+  }
+});
+const _resolveComponent = window["Vue"].resolveComponent;
+const _openBlock = window["Vue"].openBlock;
+const _createBlock = window["Vue"].createBlock;
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_ViewField = _resolveComponent("ViewField");
+  const _component_EditField = _resolveComponent("EditField");
+  return _ctx.readonly ? (_openBlock(), _createBlock(_component_ViewField, {
+    key: 0,
+    value: _ctx.value
+  }, null, 8, ["value"])) : (_openBlock(), _createBlock(_component_EditField, { key: 1 }));
 }
 var Component = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 Date.prototype.toTemporalInstant = toTemporalInstant;
