@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Event;
 use Performing\Taskday\Date\Console\Commands\CheckRecurringEventsCommand;
 use Performing\Taskday\Date\Events\RecurringEvent;
 use Performing\Taskday\Date\Listeners\SendNotificationForRecurringEvent;
+use Performing\Taskday\Date\Events\DeadlineEvent;
+use Performing\Taskday\Date\Listeners\SendDeadlineEventNotification;
+use Performing\Taskday\Date\Listeners\SendRecurringEventNotification;
 
 class DateServiceProvider extends ServiceProvider
 {
@@ -24,14 +27,17 @@ class DateServiceProvider extends ServiceProvider
         Route::middleware('web')->group(__DIR__ . '/../routes/web.php');
 
         // Registering console commands
-        $this->commands([
-            CheckRecurringEventsCommand::class,
-        ]);
+        $this->commands([ CheckRecurringEventsCommand::class ]);
 
         // Listen for event
         Event::listen(
             RecurringEvent::class,
-            [SendNotificationForRecurringEvent::class, 'handle']
+            [SendRecurringEventNotification::class, 'handle']
+        );
+
+        Event::listen(
+            DeadlineEvent::class,
+            [SendDeadlineEventNotification::class, 'handle']
         );
     }
 
@@ -40,6 +46,7 @@ class DateServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        
         $this->app->singleton('performing.taskday.date.console.kernel', function($app) {
             $dispatcher = $app->make(\Illuminate\Contracts\Events\Dispatcher::class);
             return new \Performing\Taskday\Date\Console\Kernel($app, $dispatcher);

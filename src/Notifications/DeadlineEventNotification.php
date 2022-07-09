@@ -7,7 +7,7 @@ use Taskday\Models\Card;
 use Taskday\Notifications\Notification;
 use Taskday\Notifications\PendingNotification;
 
-class RecurringEventNotification extends Notification implements ShouldBroadcast
+class DeadlineEventNotification extends Notification implements ShouldBroadcast
 {
     public $card;
 
@@ -30,7 +30,7 @@ class RecurringEventNotification extends Notification implements ShouldBroadcast
     public function toPendingNotification(): PendingNotification
     {
         return (new PendingNotification)
-            ->title('"' . $this->card->title  . '"' . 'is recurring today')
+            ->title('"' . $this->card->title  . '"' . 'is due today')
             ->body('')
             ->action('View', route('cards.show', [$this->card]));
     }

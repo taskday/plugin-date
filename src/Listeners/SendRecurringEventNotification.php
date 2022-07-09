@@ -6,7 +6,7 @@ use Performing\Taskday\Date\Events\RecurringEvent;
 use Performing\Taskday\Date\Notifications\RecurringEventNotification;
 use Taskday\Models\Card;
 
-class SendNotificationForRecurringEvent
+class SendRecurringEventNotification
 {
     public function handle(RecurringEvent $event)
     {
