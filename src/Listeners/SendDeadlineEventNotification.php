@@ -2,13 +2,13 @@
 
 namespace Performing\Taskday\Date\Listeners;
 
-use Performing\Taskday\Date\Events\RecurringEvent;
 use Performing\Taskday\Date\Notifications\RecurringEventNotification;
 use Taskday\Models\Card;
+use Performing\Taskday\Date\Events\DeadlineEvent;
 
 class SendDeadlineEventNotification
 {
-    public function handle(RecurringEvent $event)
+    public function handle(DeadlineEvent $event)
     {
       $card = Card::find($event->cardId);
 

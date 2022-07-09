@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use Performing\Taskday\Date\Events\RecurringEvent;
 use Performing\Taskday\Date\Fields\DateField;
 use Taskday\Models\CardField;
+use Performing\Taskday\Date\Events\DeadlineEvent;
 
 class CheckRecurringEventsCommand extends Command
 {
