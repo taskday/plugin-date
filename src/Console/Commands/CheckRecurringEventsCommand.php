@@ -2,7 +2,6 @@
 
 namespace Performing\Taskday\Date\Console\Commands;
 
-
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Performing\Taskday\Date\Events\RecurringEvent;
@@ -32,7 +31,6 @@ class CheckRecurringEventsCommand extends Command
      * @return void
      */
     public function __construct()
-
     {
         parent::__construct();
     }
@@ -54,7 +52,11 @@ class CheckRecurringEventsCommand extends Command
             ->each(function (CardField $field) {
                 $data = json_decode($field->value);
 
-                if (! $data) {
+                if (!$field->value || !$data) {
+                    return;
+                }
+
+                if ($data->start === 0) {
                     return;
                 }
 
@@ -68,7 +70,6 @@ class CheckRecurringEventsCommand extends Command
                 } else {
                     event(new DeadlineEvent($field->card_id, $field->field_id, $data));
                 }
-
             });
 
         $this->info('Done!');
